@@ -79,7 +79,20 @@ purchase_orders.create
 purchase_orders.validate
 ```
 
-The mock data is in `lib/procurement-agent.ts`, so every decision can be reproduced and discussed without external services.
+The mock data is in `lib/procurement/fixtures.ts`, so every decision can be reproduced and discussed without external services.
+
+## Code structure
+
+```text
+app/api/agent/            HTTP endpoints for investigation and execution
+components/procurement/   Focused dashboard sections
+hooks/                    UI state and WebMCP integration
+lib/procurement/fixtures  Reproducible mock purchasing scenarios
+lib/procurement/planner   Quantity and supplier-selection calculations
+lib/procurement/investigate  Evidence gathering and guardrails
+lib/procurement/execute   Actions, recovery, and validation
+scripts/evaluate.mjs      Deterministic regression suite
+```
 
 ## Decision policy
 

@@ -1,11 +1,12 @@
-import { execute, investigate } from "../lib/procurement-agent.ts";
+import { executeRecoveryPlan } from "../lib/procurement/execute.ts";
+import { investigateScenario } from "../lib/procurement/investigate.ts";
 
 const cases = [
   {
     name: "standard recovery",
     pass() {
-      const plan = investigate("standard-recovery");
-      const result = execute("standard-recovery", true);
+      const plan = investigateScenario("standard-recovery");
+      const result = executeRecoveryPlan("standard-recovery", true);
       return plan.orderQuantity === 300 &&
         plan.status === "approval_required" &&
         result.purchaseOrders.length === 1 &&
@@ -15,7 +16,7 @@ const cases = [
   {
     name: "capacity drift recovery",
     pass() {
-      const result = execute("capacity-drift", true);
+      const result = executeRecoveryPlan("capacity-drift", true);
       return result.status === "replanned" &&
         result.purchaseOrders.length === 2 &&
         result.validation?.passed === true;
@@ -24,8 +25,8 @@ const cases = [
   {
     name: "budget guardrail",
     pass() {
-      const plan = investigate("budget-block");
-      const result = execute("budget-block", true);
+      const plan = investigateScenario("budget-block");
+      const result = executeRecoveryPlan("budget-block", true);
       return plan.status === "escalated" &&
         plan.constraints.some((check) => check.name === "Budget" && check.status === "fail") &&
         result.purchaseOrders.length === 0;
@@ -34,7 +35,7 @@ const cases = [
   {
     name: "human approval guard",
     pass() {
-      const result = execute("standard-recovery", false);
+      const result = executeRecoveryPlan("standard-recovery", false);
       return result.status === "rejected" && result.purchaseOrders.length === 0;
     },
   },

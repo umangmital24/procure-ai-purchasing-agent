@@ -1,12 +1,13 @@
-import { investigate, scenarios, type ScenarioKey } from "@/lib/procurement-agent";
-import { explainDecision } from "@/lib/llm-explainer";
+import { isScenarioKey } from "@/lib/procurement/fixtures";
+import { investigateScenario } from "@/lib/procurement/investigate";
+import { explainDecision } from "@/lib/procurement/llm-explainer";
 
 export async function GET(request: Request) {
-  const key = new URL(request.url).searchParams.get("scenario") as ScenarioKey | null;
-  if (!key || !scenarios[key]) {
+  const key = new URL(request.url).searchParams.get("scenario");
+  if (!isScenarioKey(key)) {
     return Response.json({ error: "Unknown scenario" }, { status: 400 });
   }
-  const run = investigate(key);
+  const run = investigateScenario(key);
   run.explanation = await explainDecision(run);
   return Response.json({ run });
 }
